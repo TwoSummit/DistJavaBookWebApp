@@ -74,13 +74,13 @@ public class AuthorController extends HttpServlet {
 
             // Get requested action by user
             String action = request.getParameter(ACTION);
+            System.out.println("hi");
 
             // User is attempting to fiew all authors in the table
             if (action.equalsIgnoreCase(LIST_ALL_AUTHORS_ACTION)) {
                 // Expects: nothing
                 
                 List<Author> authorList = authorService.getAuthorList();
-                System.out.println("in here");
                 System.out.println(authorList.toString());
                 request.setAttribute(AUTHOR_LIST_ATTRIBUTE, authorList);
 
@@ -129,6 +129,7 @@ public class AuthorController extends HttpServlet {
             }
 
         } catch (Exception e) {
+            System.out.println(e.toString());
             destination = "/authorList.jsp";
             request.setAttribute("errMessage", e.getMessage());
         }
