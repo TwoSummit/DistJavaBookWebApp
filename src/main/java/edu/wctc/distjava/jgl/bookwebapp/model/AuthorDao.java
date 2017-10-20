@@ -238,13 +238,13 @@ public class AuthorDao implements IAuthorDao {
 //        int recsUpdated = dao.updateAuthorById(1, colNames, colValues);
 
     
-        List<String> colNames = new ArrayList<>();
-        colNames.add("author_name");
-        
-        List<Object> colValues = new ArrayList<>();
-        colValues.add("Test Guy");
-        
-        int recsAdded = dao.addAuthor(colNames, colValues);
+//        List<String> colNames = new ArrayList<>();
+//        colNames.add("author_name");
+//        
+//        List<Object> colValues = new ArrayList<>();
+//        colValues.add("Test Guy");
+//        
+//        int recsAdded = dao.addAuthor(colNames, colValues);
         
         List<Author> list = dao.getListOfAuthors();
         for(Author a: list) {

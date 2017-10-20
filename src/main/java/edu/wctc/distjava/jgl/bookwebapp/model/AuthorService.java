@@ -86,8 +86,10 @@ public class AuthorService {
         colValues.add("Author Service");
         
 //        int recsUpdated = authorService.editAuthorById(5, colNames, colValues);
-        
-        int recsAdded = authorService.addAuthor(colNames, colValues);
+
+//        for(int i = 0; i < 10; i++ ){
+            int recsAdded = authorService.addAuthor(colNames, colValues);
+//        }
         
         List<Author> list = authorService.getAuthorList();
         for (Author a : list) {

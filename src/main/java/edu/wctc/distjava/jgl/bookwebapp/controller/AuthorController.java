@@ -13,6 +13,8 @@ import edu.wctc.distjava.jgl.bookwebapp.model.MySqlDataAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Array;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
@@ -28,12 +30,16 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "AuthorController", urlPatterns = {"/authorController"})
 public class AuthorController extends HttpServlet {
-
+    
+    public static final String DEFAULT_DESTINATION = "/authorList.jsp";
+    public static final String CREATE_AUTHOR_FORM_DESTINATION = "/authorCreate.jsp";
+    
     public static final String ACTION = "action";
     public static final String LIST_ALL_AUTHORS_ACTION = "listAll";
     public static final String EDIT_ONE_AUTHOR_ACTION = "editOne";
     public static final String DELETE_ONE_AUTHOR_ACTION = "deleteOne";
     public static final String CREATE_ONE_AUTHOR_ACTION = "createOne";
+    public static final String CREATE_ONE_AUTHOR_SEND_TO_FORM_ACTION = "createOneDirect";
 
     public static final String PRIMARY_KEY_ID_PARAMATER = "pkValue";
     public static final String NAME_PARAMATER = "nameValue";
@@ -57,7 +63,7 @@ public class AuthorController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        String destination = "/authorList.jsp"; // default
+        String destination = DEFAULT_DESTINATION; // default
 
         try {
 
@@ -74,71 +80,117 @@ public class AuthorController extends HttpServlet {
 
             // Get requested action by user
             String action = request.getParameter(ACTION);
-            System.out.println("hi");
 
             // User is attempting to fiew all authors in the table
             if (action.equalsIgnoreCase(LIST_ALL_AUTHORS_ACTION)) {
                 // Expects: nothing
                 
-                List<Author> authorList = authorService.getAuthorList();
-                System.out.println(authorList.toString());
-                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, authorList);
-
-                // example AuthorController?action=listAll
+                // set attributes
+                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, getAllAuthors(authorService));
+                
+                // set destination
+                destination = DEFAULT_DESTINATION; // default
             } 
             
             // User is attempting to delete an author
             else if (action.equalsIgnoreCase(DELETE_ONE_AUTHOR_ACTION)) {
                 // Expects: String pkValue
-
+                
+                // retreive paramaters
                 String pkValue = request.getParameter(PRIMARY_KEY_ID_PARAMATER);
+                
+                // query
                 int recsDeleted = authorService.removeAuthorById(pkValue);
+                
+                // set attributes
                 request.setAttribute(AUTHORS_DELETED_ATTRIBUTE, recsDeleted);
-
+                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, getAllAuthors(authorService));
+                
+                // set destination
+                destination = DEFAULT_DESTINATION; // default
+                
                 // example AuthorController?action=deleteOne&pkValue=8
+                System.out.println("DELETE_ONE_AUTHOR_ACTION");
             } 
             
             // User is attempting to edit an author
             else if (action.equalsIgnoreCase(EDIT_ONE_AUTHOR_ACTION)) {
                 // Expects: String pkValue, List<String> colNames, List<Object> colValues
-
+                
+                // retreive paramaters
                 int pkValue = Integer.parseInt(request.getParameter(PRIMARY_KEY_ID_PARAMATER));
-
                 String name = request.getParameter(NAME_PARAMATER);
+                
+                // query
                 List<String> colNames = Arrays.asList(TABLE_COLUMN_AUTHOR_NAME);
                 List<Object> colValues = Arrays.asList(name);
 
                 int recsUpdated = authorService.editAuthorById(pkValue, colNames, colValues);
+                
+                // set attributes
                 request.setAttribute(AUTHORS_UPDATED_ATTRIBUTE, recsUpdated);
+                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, getAllAuthors(authorService));
+                
+                // set destination
+                destination = DEFAULT_DESTINATION; // default
 
-                // example AuthorController?action=editOne&idValue=5&nameValue="Jimmy"
+                // example AuthorController?action=editOne&idValue=5&nameValue=Jimmy
+                System.out.println("EDIT_ONE_AUTHOR_ACTION");
             } 
-
+            // User is attempting to create an author, direct them to form
+            else if (action.equalsIgnoreCase(CREATE_ONE_AUTHOR_SEND_TO_FORM_ACTION)) {
+                
+                // set destination
+                destination = CREATE_AUTHOR_FORM_DESTINATION;
+                
+                // example AuthorController?action=createOne&name=Sally
+                System.out.println("CREATE_ONE_AUTHOR_SEND_TO_FORM_ACTION");
+            }
             // User is attempting to create an author
             else if (action.equalsIgnoreCase(CREATE_ONE_AUTHOR_ACTION)) {
                 // Expects: List<String> colNames, List<Object> colValues
 
+                // retreive paramaters
                 String name = request.getParameter(NAME_PARAMATER);
-                List<String> colNames = Arrays.asList(TABLE_COLUMN_AUTHOR_NAME);
-                List<Object> colValues = Arrays.asList(name);
+                List<String> colNames = new ArrayList<>();
+                colNames.add(TABLE_COLUMN_AUTHOR_NAME);
+                List<Object> colValues = new ArrayList<>();
+                colNames.add(name);
 
+                // query
                 int recsAdded = authorService.addAuthor(colNames, colValues);
+                
+                // set attributes
                 request.setAttribute(AUTHORS_UPDATED_ATTRIBUTE, recsAdded);
+                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, getAllAuthors(authorService));
+                
+                // set destination
+                destination = DEFAULT_DESTINATION; // default
                 
                 // example AuthorController?action=createOne&name=Sally
+                System.out.println("CREATE_ONE_AUTHOR_ACTION");
             }
-
         } catch (Exception e) {
             System.out.println(e.toString());
-            destination = "/authorList.jsp";
+            destination = DEFAULT_DESTINATION; // default
             request.setAttribute("errMessage", e.getMessage());
         }
 
+        
+                
         RequestDispatcher view = request.getRequestDispatcher(destination);
         view.forward(request, response);
 
     }
 
+    public final List<Author> getAllAuthors(AuthorService as) 
+            throws SQLException, 
+            ClassNotFoundException{
+        
+            System.out.println("LIST_ALL_AUTHORS_ACTION");
+            return as.getAuthorList();
+    }
+    
     public final List<String> getColNames() {
         return Arrays.asList("");
     }

@@ -19,22 +19,29 @@
     </head>
     <body>
         <div class="container">
-            <h1>Author List</h1>
-            <table border="1" class="table table-hover">
-                <c:forEach var="a" items="${authorList}">
-                    <tr>
-                        <td>${a.authorId}</td>
-                        <td>${a.authorName}</td>
-                        <td><fmt:formatDate pattern="yyyy-MM-dd" value="${a.dateAdded}" /></td>
-                        <td><a href="authorController?action=editOne&pkValue=${a.authorId}&nameValue=Website">Edit</a></td>
-                        <td><a href="authorController?action=deleteOne&pkValue=${a.authorId}" class="btn btn-info">Delete</a></td>
-                    </tr>
-                </c:forEach>
-            </table>
-            <a href="authorController?action=createOneDirect" class="btn btn-info">
-                Add Author
-            </a>
+            
+            <h1>Add Author</h1>
+            <div class="col-sm-12">
+                <form name="addAuthor" 
+                      method="get">
+
+                    <div class="row">
+                        <div class="form-group ">
+                            <label>Author Name
+                                <input type="text" placeholder="example: Bob Smith" name="nameValue" class="form-control" />
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group">
+                             <input type="hidden" name="action" value="createOne"/>
+                            <button type="submit" class="button">Add Author</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
         </div>
-        
     </body>
 </html>
