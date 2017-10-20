@@ -17,7 +17,7 @@ import java.util.Vector;
 
 public class MySqlDataAccess implements IDataAccess {
     private final int ALL_RECORDS = 0;
-    private final boolean DEBUG = true;
+    private final boolean DEBUG = false;
 
     private Connection conn;
     private Statement stmt;
