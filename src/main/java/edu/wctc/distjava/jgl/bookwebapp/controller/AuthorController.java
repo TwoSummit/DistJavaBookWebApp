@@ -6,10 +6,7 @@
 package edu.wctc.distjava.jgl.bookwebapp.controller;
 
 import edu.wctc.distjava.jgl.bookwebapp.model.Author;
-import edu.wctc.distjava.jgl.bookwebapp.model.AuthorDao;
 import edu.wctc.distjava.jgl.bookwebapp.model.AuthorService;
-import edu.wctc.distjava.jgl.bookwebapp.model.IAuthorDao;
-import edu.wctc.distjava.jgl.bookwebapp.model.MySqlDataAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Array;
@@ -17,6 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -50,6 +48,9 @@ public class AuthorController extends HttpServlet {
     public static final String AUTHORS_ADDED_ATTRIBUTE = "authorsUpdated";
 
     public static final String TABLE_COLUMN_AUTHOR_NAME = "author_name";
+    
+    @EJB
+    private AuthorService authorService;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -67,17 +68,6 @@ public class AuthorController extends HttpServlet {
 
         try {
 
-            // Pulled from sperate file in the future
-            IAuthorDao dao = new AuthorDao(
-                "com.mysql.jdbc.Driver",
-                "jdbc:mysql://localhost:3306/book",
-                "root", "",
-                new MySqlDataAccess()
-            );
-
-            // Instantiate the authorService
-            AuthorService authorService = new AuthorService(dao);
-
             // Get requested action by user
             String action = request.getParameter(ACTION);
 
@@ -86,7 +76,7 @@ public class AuthorController extends HttpServlet {
                 // Expects: nothing
                 
                 // set attributes
-                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, getAllAuthors(authorService));
+                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, authorService.getAuthorList());
                 
                 // set destination
                 destination = DEFAULT_DESTINATION; // default
@@ -104,7 +94,7 @@ public class AuthorController extends HttpServlet {
                 
                 // set attributes
                 request.setAttribute(AUTHORS_DELETED_ATTRIBUTE, recsDeleted);
-                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, getAllAuthors(authorService));
+                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, authorService.getAuthorList());
                 
                 // set destination
                 destination = DEFAULT_DESTINATION; // default
@@ -129,7 +119,7 @@ public class AuthorController extends HttpServlet {
                 
                 // set attributes
                 request.setAttribute(AUTHORS_UPDATED_ATTRIBUTE, recsUpdated);
-                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, getAllAuthors(authorService));
+                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, authorService.getAuthorList());
                 
                 // set destination
                 destination = DEFAULT_DESTINATION; // default
@@ -152,17 +142,12 @@ public class AuthorController extends HttpServlet {
 
                 // retreive paramaters
                 String name = request.getParameter(NAME_PARAMATER);
-                List<String> colNames = new ArrayList<>();
-                colNames.add(TABLE_COLUMN_AUTHOR_NAME);
-                List<Object> colValues = new ArrayList<>();
-                colNames.add(name);
 
                 // query
-                int recsAdded = authorService.addAuthor(colNames, colValues);
+                authorService.addAuthor(name);
                 
                 // set attributes
-                request.setAttribute(AUTHORS_UPDATED_ATTRIBUTE, recsAdded);
-                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, getAllAuthors(authorService));
+                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, authorService.getAuthorList());
                 
                 // set destination
                 destination = DEFAULT_DESTINATION; // default
@@ -176,24 +161,11 @@ public class AuthorController extends HttpServlet {
             request.setAttribute("errMessage", e.getMessage());
         }
 
-        
-                
         RequestDispatcher view = request.getRequestDispatcher(destination);
         view.forward(request, response);
 
     }
 
-    public final List<Author> getAllAuthors(AuthorService as) 
-            throws SQLException, 
-            ClassNotFoundException{
-        
-            System.out.println("LIST_ALL_AUTHORS_ACTION");
-            return as.getAuthorList();
-    }
-    
-    public final List<String> getColNames() {
-        return Arrays.asList("");
-    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
