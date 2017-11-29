@@ -22,8 +22,8 @@ public class MockAuthorDao implements IAuthorDao {
             throws SQLException, ClassNotFoundException {
         
         List<Author> list = Arrays.asList(
-                new Author(1, "John Doe", new Date()),
-                new Author(2, "Bob Smith", new Date())
+//                new Author(1, "John Doe", new Date()),
+//                new Author(2, "Bob Smith", new Date())
         );
           
         return list;

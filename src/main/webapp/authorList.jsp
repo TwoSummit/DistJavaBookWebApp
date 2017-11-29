@@ -26,7 +26,7 @@
                         <td>${a.authorId}</td>
                         <td>${a.authorName}</td>
                         <td><fmt:formatDate pattern="yyyy-MM-dd" value="${a.dateAdded}" /></td>
-                        <td><a href="authorController?action=editOne&pkValue=${a.authorId}&nameValue=Website">Edit</a></td>
+                        <td><a href="authorController?action=editAuthorsDirect&pkValue=${a.authorId}">Edit</a></td>
                         <td><a href="authorController?action=deleteOne&pkValue=${a.authorId}" class="btn btn-info">Delete</a></td>
                     </tr>
                 </c:forEach>

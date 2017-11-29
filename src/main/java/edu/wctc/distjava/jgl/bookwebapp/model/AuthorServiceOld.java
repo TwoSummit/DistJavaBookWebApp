@@ -13,7 +13,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 @Stateless
-public class AuthorService implements Serializable{
+public class AuthorServiceOld implements Serializable{
 
     private final String AUTHOR_TBL = "author";
     private final String AUTHOR_PK = "author_id";
@@ -21,7 +21,7 @@ public class AuthorService implements Serializable{
     @PersistenceContext(unitName = "book_PU")
     private EntityManager em;
     
-    public AuthorService() {
+    public AuthorServiceOld() {
     }
 
     public EntityManager getEm() {

@@ -6,7 +6,8 @@
 package edu.wctc.distjava.jgl.bookwebapp.controller;
 
 import edu.wctc.distjava.jgl.bookwebapp.model.Author;
-import edu.wctc.distjava.jgl.bookwebapp.model.AuthorService;
+import edu.wctc.distjava.jgl.bookwebapp.model.AuthorFacade;
+import edu.wctc.distjava.jgl.bookwebapp.model.AuthorServiceOld;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Array;
@@ -31,6 +32,7 @@ public class AuthorController extends HttpServlet {
     /* Quick change to push*/
     public static final String DEFAULT_DESTINATION = "/authorList.jsp";
     public static final String CREATE_AUTHOR_FORM_DESTINATION = "/authorCreate.jsp";
+    public static final String EDIT_AUTHORS_FORM_DESTINATION = "/authorEdit.jsp";
     
     public static final String ACTION = "action";
     public static final String LIST_ALL_AUTHORS_ACTION = "listAll";
@@ -38,6 +40,7 @@ public class AuthorController extends HttpServlet {
     public static final String DELETE_ONE_AUTHOR_ACTION = "deleteOne";
     public static final String CREATE_ONE_AUTHOR_ACTION = "createOne";
     public static final String CREATE_ONE_AUTHOR_SEND_TO_FORM_ACTION = "createOneDirect";
+    public static final String EDIT_AUTHORS_SEND_TO_FORM_ACTION = "editAuthorsDirect";
 
     public static final String PRIMARY_KEY_ID_PARAMATER = "pkValue";
     public static final String NAME_PARAMATER = "nameValue";
@@ -49,8 +52,12 @@ public class AuthorController extends HttpServlet {
 
     public static final String TABLE_COLUMN_AUTHOR_NAME = "author_name";
     
+    //
+    public static final String ONE_AUTHOR_OBJECT = "authorObject";
+    
     @EJB
-    private AuthorService authorService;
+    private AuthorFacade authorFacade;
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -73,10 +80,8 @@ public class AuthorController extends HttpServlet {
 
             // User is attempting to fiew all authors in the table
             if (action.equalsIgnoreCase(LIST_ALL_AUTHORS_ACTION)) {
-                // Expects: nothing
-                
-                // set attributes
-                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, authorService.getAuthorList());
+                // set attribute(s)
+                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, this.authorFacade.findAll());
                 
                 // set destination
                 destination = DEFAULT_DESTINATION; // default
@@ -84,17 +89,14 @@ public class AuthorController extends HttpServlet {
             
             // User is attempting to delete an author
             else if (action.equalsIgnoreCase(DELETE_ONE_AUTHOR_ACTION)) {
-                // Expects: String pkValue
-                
                 // retreive paramaters
                 String pkValue = request.getParameter(PRIMARY_KEY_ID_PARAMATER);
                 
                 // query
-                int recsDeleted = authorService.removeAuthorById(pkValue);
+                authorFacade.removeById(pkValue);
                 
-                // set attributes
-                request.setAttribute(AUTHORS_DELETED_ATTRIBUTE, recsDeleted);
-                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, authorService.getAuthorList());
+                // set attribute(s)
+                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, authorFacade.findAll());
                 
                 // set destination
                 destination = DEFAULT_DESTINATION; // default
@@ -103,23 +105,35 @@ public class AuthorController extends HttpServlet {
                 System.out.println("DELETE_ONE_AUTHOR_ACTION");
             } 
             
+            // User is attempting to edit authors, direct them to form
+            else if (action.equalsIgnoreCase(EDIT_AUTHORS_SEND_TO_FORM_ACTION)) {
+                
+                // retreive paramaters
+                String pkValue = request.getParameter(PRIMARY_KEY_ID_PARAMATER);
+                
+                // set attribute(s)
+                request.setAttribute(ONE_AUTHOR_OBJECT, this.authorFacade.findById(pkValue));
+                
+                // set destination
+                destination = EDIT_AUTHORS_FORM_DESTINATION;
+                
+                // example AuthorController?action=createOne&name=Sally
+                System.out.println("EDIT_AUTHORS_SEND_TO_FORM_ACTION");
+            }
+            
             // User is attempting to edit an author
             else if (action.equalsIgnoreCase(EDIT_ONE_AUTHOR_ACTION)) {
                 // Expects: String pkValue, List<String> colNames, List<Object> colValues
                 
                 // retreive paramaters
-                int pkValue = Integer.parseInt(request.getParameter(PRIMARY_KEY_ID_PARAMATER));
-                String name = request.getParameter(NAME_PARAMATER);
+                String pkValue = request.getParameter( PRIMARY_KEY_ID_PARAMATER );
+                String name = request.getParameter( NAME_PARAMATER );
                 
                 // query
-                List<String> colNames = Arrays.asList(TABLE_COLUMN_AUTHOR_NAME);
-                List<Object> colValues = Arrays.asList(name);
-
-                int recsUpdated = authorService.editAuthorById(pkValue, colNames, colValues);
+                this.authorFacade.updateAuthorName( pkValue, name );
                 
-                // set attributes
-                request.setAttribute(AUTHORS_UPDATED_ATTRIBUTE, recsUpdated);
-                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, authorService.getAuthorList());
+                // set attribute(s)
+                request.setAttribute( AUTHOR_LIST_ATTRIBUTE, authorFacade.findAll() );
                 
                 // set destination
                 destination = DEFAULT_DESTINATION; // default
@@ -127,6 +141,7 @@ public class AuthorController extends HttpServlet {
                 // example AuthorController?action=editOne&idValue=5&nameValue=Jimmy
                 System.out.println("EDIT_ONE_AUTHOR_ACTION");
             } 
+            
             // User is attempting to create an author, direct them to form
             else if (action.equalsIgnoreCase(CREATE_ONE_AUTHOR_SEND_TO_FORM_ACTION)) {
                 
@@ -136,6 +151,7 @@ public class AuthorController extends HttpServlet {
                 // example AuthorController?action=createOne&name=Sally
                 System.out.println("CREATE_ONE_AUTHOR_SEND_TO_FORM_ACTION");
             }
+            
             // User is attempting to create an author
             else if (action.equalsIgnoreCase(CREATE_ONE_AUTHOR_ACTION)) {
                 // Expects: List<String> colNames, List<Object> colValues
@@ -144,10 +160,10 @@ public class AuthorController extends HttpServlet {
                 String name = request.getParameter(NAME_PARAMATER);
 
                 // query
-                authorService.addAuthor(name);
+                authorFacade.createAuthor(name);
                 
-                // set attributes
-                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, authorService.getAuthorList());
+                // set attribute(s)
+                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, authorFacade.findAll());
                 
                 // set destination
                 destination = DEFAULT_DESTINATION; // default
