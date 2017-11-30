@@ -5,6 +5,7 @@
  */
 package edu.wctc.distjava.jgl.bookwebapp.model;
 
+import edu.wctc.distjava.jgl.bookwebapp.repository.AuthorRepository;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -12,27 +13,40 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author cssco
  */
-@Stateless
-public class AuthorFacade extends AbstractFacade<Author> {
+@Service
+public class AuthorService {
 
     private final String AUTHOR_TBL = "author";
     private final String AUTHOR_PK = "author_id";
     
-    @PersistenceContext(unitName = "book_PU")
-    private EntityManager em;
-
-    @Override
-    protected EntityManager getEm() {
-        return em;
+    @Autowired
+    private AuthorRepository authorRepo;
+    
+    public AuthorService() {
     }
-
-    public AuthorFacade() {
-        super(Author.class);
+    
+    public List<Author> findAll(){
+        return authorRepo.findAll();
+    }
+    
+    public Author findById(String id){
+        return authorRepo.findOne(Integer.parseInt(id));
+    }
+    
+    public void addAuthor(String authorName) {
+        Date dateAdded = new Date();
+        Author author = new Author();
+        author.setAuthorName(authorName);
+        author.setDateAdded(dateAdded);
+        
+        authorRepo.saveAndFlush(author);
     }
     
     public void createAuthor(String authorName) {

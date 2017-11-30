@@ -6,7 +6,7 @@
 package edu.wctc.distjava.jgl.bookwebapp.controller;
 
 import edu.wctc.distjava.jgl.bookwebapp.model.Author;
-import edu.wctc.distjava.jgl.bookwebapp.model.AuthorFacade;
+import edu.wctc.distjava.jgl.bookwebapp.model.AuthorService;
 import edu.wctc.distjava.jgl.bookwebapp.model.AuthorServiceOld;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -56,7 +56,7 @@ public class AuthorController extends HttpServlet {
     public static final String ONE_AUTHOR_OBJECT = "authorObject";
     
     @EJB
-    private AuthorFacade authorFacade;
+    private AuthorService authorFacade;
     
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
