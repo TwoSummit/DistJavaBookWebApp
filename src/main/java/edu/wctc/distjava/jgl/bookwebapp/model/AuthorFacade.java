@@ -19,9 +19,6 @@ import javax.persistence.Query;
  */
 @Stateless
 public class AuthorFacade extends AbstractFacade<Author> {
-
-    private final String AUTHOR_TBL = "author";
-    private final String AUTHOR_PK = "author_id";
     
     @PersistenceContext(unitName = "book_PU")
     private EntityManager em;

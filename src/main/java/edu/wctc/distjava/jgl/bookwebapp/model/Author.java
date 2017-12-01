@@ -51,7 +51,7 @@ public class Author implements Serializable {
     @Column(name = "date_added")
     @Temporal(TemporalType.DATE)
     private Date dateAdded;
-    @OneToMany(mappedBy = "authorId")
+    @OneToMany(mappedBy = "authorObject")
     private Set<Book> bookSet;
 
     public Author() {

@@ -32,7 +32,7 @@ public class BookFacade extends AbstractFacade<Book> {
         Book book = new Book();
         book.setTitle(title);
         book.setIsbn(isbn);
-        book.setAuthorId(getEm().find(Author.class, new Integer(id)));
+        book.setAuthorObject(getEm().find(Author.class, new Integer(id)));
         getEm().merge(book);
     }
     
@@ -42,9 +42,8 @@ public class BookFacade extends AbstractFacade<Book> {
        this.edit(book);
     }
     
-    public void addOrUpdateBook(String bookId, String title, String isbn, String id) {
+    public void addOrUpdateBook(String bookId, String title, String isbn, String authorId) {
         Book book = null;
-        Integer auhtorId = new Integer(id);
         
         if( bookId == null || bookId.isEmpty() ) {
             // must be a new record
@@ -55,10 +54,18 @@ public class BookFacade extends AbstractFacade<Book> {
         
         book.setTitle(title);
         book.setIsbn(isbn);
-        book.setAuthorId(getEm().find(Author.class, new Integer(id)));
+        book.setAuthorObject(getEm().find(Author.class, new Integer(authorId)));
         
         getEm().merge(book);
-        
     }
+    
+    public void removeById(String id) {
+        this.remove( this.getEm().find( Book.class, new Integer( id ) ) );
+    }
+    
+    public Book findById(String id){
+        return this.findById( new Integer( id ) );
+    }
+    
     
 }
