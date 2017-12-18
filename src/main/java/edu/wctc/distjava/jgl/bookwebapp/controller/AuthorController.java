@@ -17,11 +17,14 @@ import java.util.Arrays;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
@@ -55,8 +58,7 @@ public class AuthorController extends HttpServlet {
     //
     public static final String ONE_AUTHOR_OBJECT = "authorObject";
     
-    @EJB
-    private AuthorService authorFacade;
+    private AuthorService authorService;
     
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -81,7 +83,7 @@ public class AuthorController extends HttpServlet {
             // User is attempting to fiew all authors in the table
             if (action.equalsIgnoreCase(LIST_ALL_AUTHORS_ACTION)) {
                 // set attribute(s)
-                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, this.authorFacade.findAll());
+                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, this.authorService.findAll());
                 
                 // set destination
                 destination = DEFAULT_DESTINATION; // default
@@ -93,10 +95,10 @@ public class AuthorController extends HttpServlet {
                 String pkValue = request.getParameter(PRIMARY_KEY_ID_PARAMATER);
                 
                 // query
-                authorFacade.removeById(pkValue);
+                authorService.removeById(pkValue);
                 
                 // set attribute(s)
-                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, authorFacade.findAll());
+                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, authorService.findAll());
                 
                 // set destination
                 destination = DEFAULT_DESTINATION; // default
@@ -112,7 +114,7 @@ public class AuthorController extends HttpServlet {
                 String pkValue = request.getParameter(PRIMARY_KEY_ID_PARAMATER);
                 
                 // set attribute(s)
-                request.setAttribute(ONE_AUTHOR_OBJECT, this.authorFacade.findById(pkValue));
+                request.setAttribute(ONE_AUTHOR_OBJECT, this.authorService.findById(pkValue));
                 
                 // set destination
                 destination = EDIT_AUTHORS_FORM_DESTINATION;
@@ -130,10 +132,10 @@ public class AuthorController extends HttpServlet {
                 String name = request.getParameter( NAME_PARAMATER );
                 
                 // query
-                this.authorFacade.updateAuthorName( pkValue, name );
+                this.authorService.updateAuthor( pkValue, name );
                 
                 // set attribute(s)
-                request.setAttribute( AUTHOR_LIST_ATTRIBUTE, authorFacade.findAll() );
+                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, authorService.findAll() );
                 
                 // set destination
                 destination = DEFAULT_DESTINATION; // default
@@ -160,10 +162,10 @@ public class AuthorController extends HttpServlet {
                 String name = request.getParameter(NAME_PARAMATER);
 
                 // query
-                authorFacade.createAuthor(name);
+                authorService.createAuthor(name);
                 
                 // set attribute(s)
-                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, authorFacade.findAll());
+                request.setAttribute(AUTHOR_LIST_ATTRIBUTE, authorService.findAll());
                 
                 // set destination
                 destination = DEFAULT_DESTINATION; // default
@@ -220,6 +222,23 @@ public class AuthorController extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }
+    
+    /**
+     * Called after the constructor is called by the container.
+     * @throws ServletException 
+     */
+    @Override
+    public void init() 
+            throws ServletException {
+        // Asjk Spring for object to inject
+        ServletContext sctx = getServletContext();
+        
+        WebApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(sctx);
+        authorService = (AuthorService)ctx.getBean("authorService");
+    }
 
+// </editor-fold>
+
+    
 }

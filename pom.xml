@@ -51,7 +51,6 @@
             </exclusions>
         </dependency>
         
-        <!-- Will enable this later when we go to Spring Security
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
@@ -68,7 +67,6 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-taglibs</artifactId>
         </dependency> 
-        -->
 
         <!--
             Simplified Data Access Using Spring Data Repository Features

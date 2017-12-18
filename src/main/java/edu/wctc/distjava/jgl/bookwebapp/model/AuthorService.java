@@ -8,12 +8,14 @@ package edu.wctc.distjava.jgl.bookwebapp.model;
 import edu.wctc.distjava.jgl.bookwebapp.repository.AuthorRepository;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -36,38 +38,46 @@ public class AuthorService {
         return authorRepo.findAll();
     }
     
-    public Author findById(String id){
-        return authorRepo.findOne(Integer.parseInt(id));
-    }
-    
-    public void addAuthor(String authorName) {
+    public void createAuthor(String authorName) {
         Date dateAdded = new Date();
         Author author = new Author();
         author.setAuthorName(authorName);
         author.setDateAdded(dateAdded);
+        author.setBookSet(new HashSet());
         
         authorRepo.saveAndFlush(author);
     }
     
-    public void createAuthor(String authorName) {
-        Author author = new Author();
-        author.setAuthorName( authorName );
-        author.setDateAdded( new Date() );
-        this.create( author );
+    public Author findById(String id)
+        throws DataAccessException{
+        return authorRepo.findOne(Integer.parseInt(id));
     }
     
-    public void updateAuthorName(String authorId, String name) {
-       Author author = this.findById( new Integer( authorId ) );
-       author.setAuthorName( name );
-       this.edit( author );
+    public void updateAuthor(String id, String authorName){
+        Author author = findById(id);
+        author.setAuthorName(authorName);
+        authorRepo.save(author);
     }
     
     public void removeById(String id) {
-        this.remove( this.getEm().find( Author.class, new Integer( id ) ) );
+        authorRepo.delete(new Integer(id));
     }
     
-    public Author findById(String id){
-        return this.findById( new Integer( id ) );
-    }
+//    public void createAuthor(String authorName) {
+//        Author author = new Author();
+//        author.setAuthorName( authorName );
+//        author.setDateAdded( new Date() );
+//        this.create( author );
+//    }
+    
+//    public void updateAuthorName(String authorId, String name) {
+//       Author author = this.findById( new Integer( authorId ) );
+//       author.setAuthorName( name );
+//       this.edit( author );
+//    }
+    
+//    public Author findById(String id){
+//        return this.findById( new Integer( id ) );
+//    }
     
 }

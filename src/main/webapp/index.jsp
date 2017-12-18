@@ -18,4 +18,14 @@
             <li>...more to come</li>
         </ul>
     </body>
+    
+    <sec:authorize access="hasAnyRole('ROLE_MGR')">
+        <h1>For managers only</h1>
+    </sec:authorize>
+    
+    <sec:authorize access="hasAnyRole('ROLE_MGR', 'ROLE_USER')">
+        Logged in as: <sec:authentication property="principal.username"></sec:authentication>
+        <a href='<%= this.getServletContext().getContextPath() + "/j_spring}_security_"%>'>Log Out</a>
+    </sec:authorize>
+
 </html>
