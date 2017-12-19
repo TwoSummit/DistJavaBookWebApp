@@ -21,6 +21,16 @@
         <div class="container">
             <h1>Book List</h1>
             <table border="1" class="table table-hover">
+                <thead>
+                    <tr>
+                        <td>ID</td>
+                        <td>ISBN</td>
+                        <td>Title</td>
+                        <td>Author</td>
+                        <td>Edit</td>
+                        <td>Delete</td>
+                    </tr>
+                </thead>
                 <c:forEach var="b" items="${bookList}">
                     <tr>
                         <td>${b.bookId}</td>

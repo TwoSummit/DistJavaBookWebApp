@@ -21,6 +21,15 @@
         <div class="container">
             <h1>Author List</h1>
             <table border="1" class="table table-hover">
+                <thead>
+                    <tr>
+                        <td>ID</td>
+                        <td>Name</td>
+                        <td>Date Added</td>
+                        <td>Edit</td>
+                        <td>Delete</td>
+                    </tr>
+                </thead>
                 <c:forEach var="a" items="${authorList}">
                     <tr>
                         <td>${a.authorId}</td>
